@@ -1,5 +1,7 @@
 package factory.abstractF.code;
 public class ProductAl implements ProductA
 {
-    public ProductAl() {}
+    public ProductAl() {
+        System.out.println("ProductAl");
+    }
 }
