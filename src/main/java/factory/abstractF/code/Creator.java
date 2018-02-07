@@ -1,4 +1,4 @@
-package factory.abstract.code;
+package factory.abstractF.code;
 public interface Creator {
     /*
         产 品
@@ -14,5 +14,5 @@ public interface Creator {
         结 构
         B 的工厂方法
     */
-    public ProductB factoryB();
+    public ProductBC factoryBC();
 }
