@@ -1,0 +1,1 @@
+获取当前时间戳：select unix_timestamp(now()) 
