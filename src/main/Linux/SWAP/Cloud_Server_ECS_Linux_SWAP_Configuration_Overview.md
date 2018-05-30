@@ -1,4 +1,4 @@
-#**云服务器 ECS Linux SWAP 配置概要说明**
+# 云服务器 ECS Linux SWAP 配置概要说明
 # [SWAP 简介]()
 
 Linux 中的 SWAP（交换分区），类似于 Windows 的虚拟内存。系统会把一部分硬盘空间虚拟成内存使用，将系统内非活动内存换页到 SWAP，以提高系统可用内存。
