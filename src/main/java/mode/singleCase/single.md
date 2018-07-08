@@ -22,25 +22,24 @@
 
 ####不完全的单例类
 ```ruby
-publicclassLazySingleton{
-privatestaticLazySingletonm_instance=null;
-
-/**
-*公开的构造子，外界可以直接实例化
-*/
-publicLazySingleton(){}
-
-/**
-*静态工厂方法
-*@return返还LazySingleton类的惟一的实例
-*/
-synchronizedpublicstaticLazySingletongetlnstance(){
-if(m_instance==null){
-m_instance=newLazySingleton();
-}
-returnm_instance;
-
-}
+public class LazySingleton {
+    private static LazySingleton m_instance = null;
+    
+    /**
+      * 公开的构造子，外界可以直接实例化
+      */
+    public LazySingleton() {}
+    
+    /**
+      * 静态工厂方法
+      * @return返还LazySingleton类的惟一的实例
+      */
+    synchronized public static LazySingleton getlnstance() {
+        if(m_instance == null){
+            m_instance = new LazySingleton();
+        }
+        return m_instance;
+    }
 }
 ```
 上面的代码乍看起来是一个“懒汉”式单例类，仔细一看，发现有一个公开的构造子。由于外界可以使用构造子创建出任意多个此类的实例，这违背了单例类只能有一个(或有限个)实例的特性，因此这个类不是完全的单例类。这种情况有时会出现，比如javax.swing.TimerQueue便是一例.
