@@ -28,6 +28,7 @@ package com.rent.merchant.common.utils;
  */
 
 import com.rent.merchant.daoBean.Merchant;
+import com.rent.merchant.daoBean.Withdraw;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -45,23 +46,9 @@ public class SqlUtil {
         sqlMap.put("delete", "delete from %s where 1 = 1");
         sqlMap.put("count", "select count(%s) from %s where 1 = 1");
         sqlMap.put("and", " and ");
-    }
-
-    public static void main(String[] args) {
-        Map<String, String> map = new HashMap<>();
-        map.put("name", "aaa");
-        map.put("pass", "aaaaa");
-        System.out.println(conditionalQuery(map, Merchant.class, "select"));
-
-
-        System.out.println(conditionalDeletion(map, Merchant.class, "delete"));
-
-
-        System.out.println(conditionalModify(map, Merchant.class, "update"));
-
-
-
-        System.out.println(insert(new ArrayList<>(map.keySet()), new ArrayList<>(map.values()), Merchant.class, "insert"));
+        sqlMap.put("right", " right join %s on ");
+        sqlMap.put("left", " left join %s on ");
+        sqlMap.put("subquery", "select %s from %s where %s in (%s)");
     }
 
     /**
@@ -164,5 +151,59 @@ public class SqlUtil {
         StringBuffer sql = new StringBuffer(sqlMap.get(operating)).append(String.join(", ", value)).append(")");
         StringBuffer clos = new StringBuffer("(").append(String.join(", ", key)).append(")");
         return String.format(sql.toString(), clos, clazz.getName());
+    }
+
+    /**
+     * Subquery sql stitching
+     * @param subquery conditional parameter(can be empty)
+     * @param query conditional parameter(can be empty)
+     * @param clazz class to be queried(not null)
+     * @param clazzSubquery class to be subqueried(not null)
+     * @param operating sql type
+     * @param col subquery condition
+     * @param <K> the element type
+     * @param <V> the element type
+     * @return java.lang.String
+     * @see java.util.Map
+     * @see java.lang.Class
+     * @see java.lang.NullPointerException
+     */
+    public static <K, V> String subquery(Map<K, V> subquery, Map<K, V> query, String col,  String operating, Class clazz, Class clazzSubquery) {
+        String sqlSubquery = conditionalQuery(subquery, clazzSubquery, "select");
+        StringBuffer sql = new StringBuffer(sqlMap.get(operating));
+        query.entrySet().forEach(
+                map -> sql.append(sqlMap.get("and")).append(map.getKey()).append(" = ").append(map.getValue())
+        );
+        Set<K> cols = query.keySet();
+        String str = StringUtils.join(cols.toArray(), ",");
+        return String.format(sql.toString(), isNull(cols) ? "*" : str, clazz.getName(), col, sqlSubquery);
+    }
+
+    /**
+     * Connection query sql stitching
+     * @return
+     */
+    public static String connectionQuery() {
+
+
+
+
+        return null;
+    }
+
+    public static void main(String[] args) {
+        Map<String, String> map = new HashMap<>();
+        map.put("name", "aaa");
+        map.put("pass", "aaaaa");
+        System.out.println(conditionalQuery(map, Merchant.class, "select"));
+        System.out.println(conditionalDeletion(map, Merchant.class, "delete"));
+        System.out.println(conditionalModify(map, Merchant.class, "update"));
+        System.out.println(insert(new ArrayList<>(map.keySet()), new ArrayList<>(map.values()), Merchant.class, "insert"));
+
+
+        Map<String, String> subquery = new HashMap<>();
+        subquery.put("email", "aaa");
+
+        System.out.println(subquery(subquery, map, "email","subquery", Merchant.class, Withdraw.class));
     }
 }
