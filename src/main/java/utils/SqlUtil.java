@@ -27,11 +27,12 @@ package com.rent.merchant.common.utils;
  * @date 2018/10/25
  */
 
-import com.rent.merchant.daoBean.Merchant;
-import com.rent.merchant.daoBean.Withdraw;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Sql stitching tool class.
@@ -57,14 +58,14 @@ public class SqlUtil {
      * @param param conditional parameter(can be empty)
      * @param clazz class to be queried(not null)
      * @param operating sql type
-     * @param <K> the element type
-     * @param <V> the element type
+     * @param <K> the type of keys maintained by this map
+     * @param <V> the type of mapped values
      * @return java.lang.String
      * @see java.util.Map
      * @see java.lang.Class
      * @see java.lang.NullPointerException
      */
-    public static <K, V> String conditionalQuery(Map<K, V> param, Class clazz, String operating) {
+    public static <K, V> String conditionalQuery(Map<K, V> param, String clazz, String operating) {
         if (clazz == null) throw new NullPointerException();
         StringBuffer sql = new StringBuffer(sqlMap.get(operating));
         Set<K> cols = param.keySet();
@@ -72,13 +73,13 @@ public class SqlUtil {
                 map -> sql.append(sqlMap.get("and")).append(map.getKey()).append(" = ").append(map.getValue())
         );
         String str = StringUtils.join(cols.toArray(), ",");
-        return String.format(sql.toString(), isNull(cols) ? "*" : str, clazz.getName());
+        return String.format(sql.toString(), isNull(cols) ? "*" : str, clazz);
     }
 
     /**
      * Judge empty
      * @param t param
-     * @param <T> the element type
+     * @param <T> the type of elements maintained by this set
      * @return boolean
      * @see boolean
      * @see java.util.List
@@ -94,20 +95,20 @@ public class SqlUtil {
      * @param param conditional parameter(can be empty)
      * @param clazz class to be queried(not null)
      * @param operating sql type
-     * @param <K> the element type
-     * @param <V> the element type
+     * @param <K> the type of keys maintained by this map
+     * @param <V> the type of mapped values
      * @return java.lang.String
      * @see java.util.Map
      * @see java.lang.Class
      * @see java.lang.NullPointerException
      */
-    public static <K, V> String conditionalDeletion(Map<K, V> param, Class clazz, String operating) {
+    public static <K, V> String conditionalDeletion(Map<K, V> param, String clazz, String operating) {
         if (clazz == null) throw new NullPointerException();
         StringBuffer sql = new StringBuffer(sqlMap.get(operating));
         param.entrySet().forEach(
                 map -> sql.append(sqlMap.get("and")).append(map.getKey()).append(" = ").append(map.getValue())
         );
-        return String.format(sql.toString(), clazz.getName());
+        return String.format(sql.toString(), clazz);
     }
 
     /**
@@ -116,21 +117,21 @@ public class SqlUtil {
      * @param param conditional parameter(can be empty)
      * @param clazz class to be queried(not null)
      * @param operating sql type
-     * @param <K> the element type
-     * @param <V> the element type
+     * @param <K> the type of keys maintained by this map
+     * @param <V> the type of mapped values
      * @return java.lang.String
      * @see java.util.Map
      * @see java.lang.Class
      * @see java.lang.NullPointerException
      */
-    public static <K, V> String conditionalModify(Map<K, V> param, Class clazz, String operating) {
+    public static <K, V> String conditionalModify(Map<K, V> param, String clazz, String operating) {
         if (clazz == null) throw new NullPointerException();
         StringBuffer sql = new StringBuffer(sqlMap.get(operating));
         param.entrySet().forEach(
                 map -> sql.append(map.getKey()).append(" = ").append(map.getValue()).append(", ")
         );
         String sqlSub = sql.substring(0, sql.length() - 1);
-        return String.format(sqlSub + ")", clazz.getName());
+        return String.format(sqlSub + ")", clazz);
     }
 
     /**
@@ -145,12 +146,12 @@ public class SqlUtil {
      * @see java.lang.Class
      * @see java.lang.NullPointerException
      */
-    public static String insert(List<String> key, List<String> value, Class clazz, String operating) {
+    public static String insert(List<String> key, List<String> value, String clazz, String operating) {
         if (clazz == null) throw new NullPointerException();
         if (key == null || key.size() < 1 || value == null || value.size() < 1) return null;
         StringBuffer sql = new StringBuffer(sqlMap.get(operating)).append(String.join(", ", value)).append(")");
         StringBuffer clos = new StringBuffer("(").append(String.join(", ", key)).append(")");
-        return String.format(sql.toString(), clos, clazz.getName());
+        return String.format(sql.toString(), clos, clazz);
     }
 
     /**
@@ -161,14 +162,14 @@ public class SqlUtil {
      * @param clazzSubquery class to be subqueried(not null)
      * @param operating sql type
      * @param col subquery condition
-     * @param <K> the element type
-     * @param <V> the element type
+     * @param <K> the type of keys maintained by this map
+     * @param <V> the type of mapped values
      * @return java.lang.String
      * @see java.util.Map
      * @see java.lang.Class
      * @see java.lang.NullPointerException
      */
-    public static <K, V> String subquery(Map<K, V> subquery, Map<K, V> query, String col,  String operating, Class clazz, Class clazzSubquery) {
+    public static <K, V> String subquery(Map<K, V> subquery, Map<K, V> query, String col,  String operating, String clazz, String clazzSubquery) {
         String sqlSubquery = conditionalQuery(subquery, clazzSubquery, "select");
         StringBuffer sql = new StringBuffer(sqlMap.get(operating));
         query.entrySet().forEach(
@@ -176,7 +177,7 @@ public class SqlUtil {
         );
         Set<K> cols = query.keySet();
         String str = StringUtils.join(cols.toArray(), ",");
-        return String.format(sql.toString(), isNull(cols) ? "*" : str, clazz.getName(), col, sqlSubquery);
+        return String.format(sql.toString(), isNull(cols) ? "*" : str, clazz, col, sqlSubquery);
     }
 
     /**
@@ -195,15 +196,15 @@ public class SqlUtil {
         Map<String, String> map = new HashMap<>();
         map.put("name", "aaa");
         map.put("pass", "aaaaa");
-        System.out.println(conditionalQuery(map, Merchant.class, "select"));
-        System.out.println(conditionalDeletion(map, Merchant.class, "delete"));
-        System.out.println(conditionalModify(map, Merchant.class, "update"));
-        System.out.println(insert(new ArrayList<>(map.keySet()), new ArrayList<>(map.values()), Merchant.class, "insert"));
+//        System.out.println(conditionalQuery(map, Merchant.class, "select"));
+//        System.out.println(conditionalDeletion(map, Merchant.class, "delete"));
+//        System.out.println(conditionalModify(map, Merchant.class, "update"));
+//        System.out.println(insert(new ArrayList<>(map.keySet()), new ArrayList<>(map.values()), Merchant.class, "insert"));
 
 
         Map<String, String> subquery = new HashMap<>();
         subquery.put("email", "aaa");
 
-        System.out.println(subquery(subquery, map, "email","subquery", Merchant.class, Withdraw.class));
+//        System.out.println(subquery(subquery, map, "email","subquery", Merchant.class, Withdraw.class));
     }
 }
